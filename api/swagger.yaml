@@ -1,0 +1,134 @@
+openapi: 3.0.3
+info:
+  title: Auto Messaging Service
+  version: 1.0.0
+  description: API for controlling the automatic message sender and querying sent messages.
+servers:
+  - url: http://localhost:8083
+paths:
+  /control/start:
+    post:
+      summary: Start automatic message sending
+      tags: [control]
+      responses:
+        '200':
+          description: Scheduler started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '400':
+          description: Scheduler already running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to start scheduler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /control/stop:
+    post:
+      summary: Stop automatic message sending
+      tags: [control]
+      responses:
+        '200':
+          description: Scheduler stopped
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '400':
+          description: Scheduler is not running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Failed to stop scheduler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /messages/sent:
+    get:
+      summary: List sent messages
+      tags: [messages]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+          description: Page number (default 1)
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+          description: Page size (default 20)
+      responses:
+        '200':
+          description: A paginated list of sent messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SentMessagesResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        to:
+          type: string
+        content:
+          type: string
+          maxLength: 160
+        sent:
+          type: boolean
+        sent_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+      required: [id, to, content, sent, created_at]
+    SentMessagesResponse:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+      required: [messages, total, page, limit]
+    StatusResponse:
+      type: object
+      properties:
+        status:
+          type: string
+      required: [status]
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
