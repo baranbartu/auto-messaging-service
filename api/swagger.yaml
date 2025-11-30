@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: API for controlling the automatic message sender and querying sent messages.
 servers:
-  - url: http://localhost:8083
+  - url: http://localhost:8083/api/v1
 paths:
   /control/start:
     post:

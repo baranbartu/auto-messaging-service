@@ -20,7 +20,7 @@ A Go 1.25 backend that automatically sends messages by polling PostgreSQL and di
    ```bash
    docker compose up --build
    ```
-   The API listens on `http://localhost:8083` by default. Migrations run automatically before the server comes up.
+   The API listens on `http://localhost:8083` by default, namespacing endpoints under `/api/v1`. Migrations run automatically before the server comes up.
 
 ### Local Development
 - Run the server directly: `go run ./cmd/api` (ensure Postgres + Redis are available and `.env` exported).
@@ -38,25 +38,25 @@ All parameters are .env configurable (see `.env.example`). Key values:
 - `SERVER_SHUTDOWN_TIMEOUT`: graceful shutdown timeout (default `10s`).
 
 ## API
-Swagger definition lives at `api/swagger.yaml` and is served by the app at `GET /swagger/swagger.yaml`.
+Swagger definition lives at `api/swagger.yaml` and is served by the app at `GET /api/v1/docs/swagger.yaml`.
 
 ### Endpoints
 | Method | Path | Description |
 | ------ | ---- | ----------- |
-| `POST` | `/control/start` | Start the scheduler loop. Already running -> HTTP 400. |
-| `POST` | `/control/stop` | Stop the scheduler. If already stopped -> HTTP 400. |
-| `GET`  | `/messages/sent?page=1&limit=20` | Paginated list of sent messages. |
+| `POST` | `/api/v1/control/start` | Start the scheduler loop. Already running -> HTTP 400. |
+| `POST` | `/api/v1/control/stop` | Stop the scheduler. If already stopped -> HTTP 400. |
+| `GET`  | `/api/v1/messages/sent?page=1&limit=20` | Paginated list of sent messages. |
 
 ### Example cURL
 ```bash
 # Start automatic sending
-curl -X POST http://localhost:8083/control/start
+curl -X POST http://localhost:8083/api/v1/control/start
 
 # Stop automatic sending
-curl -X POST http://localhost:8083/control/stop
+curl -X POST http://localhost:8083/api/v1/control/stop
 
 # List sent messages
-curl "http://localhost:8083/messages/sent?page=1&limit=10"
+curl "http://localhost:8083/api/v1/messages/sent?page=1&limit=10"
 ```
 
 ## Data Model

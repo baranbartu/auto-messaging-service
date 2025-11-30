@@ -17,22 +17,25 @@ func NewRouter(control *handler.ControlHandler, message *handler.MessageHandler)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	r.Get("/healthz", func(w http.ResponseWriter, _ *http.Request) {
+	api := chi.NewRouter()
+	api.Get("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("ok"))
 	})
 
-	r.Route("/control", func(r chi.Router) {
+	api.Route("/control", func(r chi.Router) {
 		r.Post("/start", control.Start)
 		r.Post("/stop", control.Stop)
 	})
 
-	r.Route("/messages", func(r chi.Router) {
+	api.Route("/messages", func(r chi.Router) {
 		r.Get("/sent", message.ListSent)
 	})
 
-	fileServer := http.StripPrefix("/swagger/", http.FileServer(http.Dir("./api")))
-	r.Handle("/swagger/*", fileServer)
+	fileServer := http.StripPrefix("/api/v1/docs/", http.FileServer(http.Dir("./api")))
+	api.Handle("/docs/*", fileServer)
+
+	r.Mount("/api/v1", api)
 
 	return r
 }
