@@ -1,5 +1,7 @@
 # Auto Messaging Service
 
+> See [`ASSUMPTIONS.md`](ASSUMPTIONS.md) for implementation tradeoffs and rationale.
+
 A Go 1.25 backend that automatically sends messages by polling PostgreSQL and dispatching payloads to a configurable webhook. The app exposes endpoints to control the message loop and to list sent messages. Everything runs with Docker Compose, Redis caches accepted webhook ids, and PostgreSQL migrations are executed automatically on startup.
 
 ## Features
