@@ -20,4 +20,7 @@ This document records the explicit decisions made while building the Auto Messag
 ## Configuration & Secrets
 - **.env-driven defaults** – Docker Compose, the Go app, and README instructions all reference the same `.env` variables so secrets (DB creds, webhook URL) are defined once. In real deployments these would live in a secret manager rather than plaintext env files.
 
+## Testing Footprint
+- **Demonstrative unit test** – Added a focused config test to verify the scheduler interval floor and to show the intended testing approach. Broader behavior and integration tests would follow as the feature set matures.
+
 These notes should clarify the “why” behind the current design and highlight areas that would be revisited for a production deployment.
