@@ -10,6 +10,9 @@ This document records the explicit decisions made while building the Auto Messag
 - **Interval guard** – Even if `SCHEDULER_INTERVAL` is set lower, the loader clamps it to ≥2 minutes to respect the spec, preventing accidental rapid polling.
 - **Control endpoints** – `/api/v1/control/*` start and stop the background goroutine so operators can pause/resume the loop without restarting the container.
 
+## Extensibility / Multi-tenancy
+- **Repository simplicity for now** – The current repository/service APIs operate on a single global message pool to keep the assessment focused. If multi-tenant data isolation or richer filtering is required later, the plan would be to introduce tenant-scoped selectors (e.g., add `tenant_id` columns/filters, accept query option structs) rather than sprinkling ad-hoc WHERE clauses throughout handlers.
+
 ## Webhook Handling
 - **Static webhook.site response** – Webhook.site cannot generate randomized `messageId` values without custom scripts/a paid plan, so the demo uses a fixed JSON payload. The service still validates the body shape (`{ "message": "Accepted", "messageId": "..." }`) before marking DB rows as sent.
 - **Headers** – `x-ins-auth-key` is forwarded from `WEBHOOK_AUTH_KEY` even though webhook.site ignores it, because the spec required the header.
